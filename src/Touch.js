@@ -307,7 +307,7 @@ export class TouchBackend {
         return this.handleTopMoveStartDelay;
     }
 
-    handleTopMoveStart (e) {
+    handleTopMoveStart (e, dragImmediately) {
         // Don't prematurely preventDefault() here since it might:
         // 1. Mess up scrolling
         // 2. Mess up long tap (which brings up context menu)
@@ -316,6 +316,19 @@ export class TouchBackend {
         const clientOffset = getEventClientOffset(e);
         if (clientOffset) {
             this._mouseClientOffset = clientOffset;
+            if (dragImmediately) {
+                var moveStartSourceIds = this.moveStartSourceIds,
+                    dragOverTargetIds = this.dragOverTargetIds;
+
+                if (!this.monitor.isDragging() && this._mouseClientOffset.hasOwnProperty('x') && moveStartSourceIds) {
+                    this.moveStartSourceIds = null;
+                    this.actions.beginDrag(moveStartSourceIds, {
+                        clientOffset: this._mouseClientOffset,
+                        getSourceClientOffset: this.getSourceClientOffset,
+                        publishSource: false
+                    });
+                }
+            }
         }
         this.waitingForDelay = false
     }
@@ -336,7 +349,7 @@ export class TouchBackend {
          }
 
         if (scrollBarTouched || !this.delayTouchOnlyOnScrollableElement) {
-            this.timeout = setTimeout(this.handleTopMoveStart.bind(this, e), delay);
+            this.timeout = setTimeout(this.handleTopMoveStart.bind(this, e, true), delay);
             this.waitingForDelay = true
         } else {
             this.handleTopMoveStart.bind(this, e)();
