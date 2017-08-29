@@ -107,6 +107,7 @@ export class TouchBackend {
             enableMouseEvents: false,
             enableKeyboardEvents: false,
             delayTouchStart: 0,
+            delayTouchOnlyOnScrollableElement: false,
             delayMouseStart: 0,
             ...options
         };
@@ -118,6 +119,7 @@ export class TouchBackend {
         this.enableKeyboardEvents = options.enableKeyboardEvents;
         this.enableMouseEvents = options.enableMouseEvents;
         this.delayTouchStart = options.delayTouchStart;
+        this.delayTouchOnlyOnScrollableElement = options.delayTouchOnlyOnScrollableElement;
         this.delayMouseStart = options.delayMouseStart;
         this.sourceNodes = {};
         this.sourceNodeOptions = {};
@@ -322,8 +324,23 @@ export class TouchBackend {
         const delay = (e.type === eventNames.touch.start)
             ? this.delayTouchStart
             : this.delayMouseStart;
-        this.timeout = setTimeout(this.handleTopMoveStart.bind(this, e), delay);
-        this.waitingForDelay = true
+
+         // If delayTouchOnlyOnScrollableElement is enabled and delayTouchStart is defined
+         // Check if one of the touched elements have a scrollbar, if so, applies the delay, otherwise, drag immediatelly
+         var scrollBarTouched = false;
+         if (this.delayTouchStart && this.delayTouchOnlyOnScrollableElement) {
+            scrollBarTouched = e.path.some(element => 
+                element.scrollHeight > element.offsetHeight &&
+                (element.scrollTop > 0 || ((element.scrollTop = 1) && element.scrollTop === 1 && !(element.scrollTop = 0)))
+            );
+         }
+
+        if (scrollBarTouched || !this.delayTouchOnlyOnScrollableElement) {
+            this.timeout = setTimeout(this.handleTopMoveStart.bind(this, e), delay);
+            this.waitingForDelay = true
+        } else {
+            this.handleTopMoveStart.bind(this, e)();
+        }   
     }
 
     handleTopMoveCapture (e) {
