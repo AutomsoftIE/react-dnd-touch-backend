@@ -1,5 +1,5 @@
 {
-  "name": "react-dnd-touch-backend",
+  "name": "@automsoft/react-dnd-touch-backend",
   "version": "0.3.13",
   "description": "Touch backend for react-dnd",
   "main": "dist/Touch.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yahoo/react-dnd-touch-backend.git"
+    "url": "git+https://github.com/AutomsoftIE/react-dnd-touch-backend.git"
   },
   "keywords": [
     "react",
@@ -23,9 +23,9 @@
   "author": "Long Ho <holevietlong@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yahoo/react-dnd-touch-backend/issues"
+    "url": "https://github.com/AutomsoftIE/react-dnd-touch-backend/issues"
   },
-  "homepage": "https://github.com/yahoo/react-dnd-touch-backend#readme",
+  "homepage": "https://github.com/AutomsoftIE/react-dnd-touch-backend#readme",
   "dependencies": {
     "react-dnd": "^2.4.0",
     "invariant": "^2.2.2"
@@ -53,5 +53,8 @@
     "react-dom": "^15.6.1",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.9.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   }
 }
