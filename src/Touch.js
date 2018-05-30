@@ -3,8 +3,8 @@
  * Copyrights licensed under the MIT License. See the accompanying LICENSE file for terms.
  */
 'use strict';
-
 import invariant from 'invariant';
+
 
 function getEventClientTouchOffset (e) {
     if (e.targetTouches.length === 1) {
@@ -342,7 +342,20 @@ export class TouchBackend {
          // Check if one of the touched elements have a scrollbar, if so, applies the delay, otherwise, drag immediatelly
          var scrollBarTouched = false;
          if (this.delayTouchStart && this.delayTouchOnlyOnScrollableElement) {
-            scrollBarTouched = e.path.some(element => 
+            var touchedPath = e.path || [];
+            // If path is empty, check if we can build it using the e.target and it's parents
+            if (touchedPath.length === 0) {
+                if (e.target) {
+                    var currentElement = e.target;
+                    while(currentElement) {
+                        touchedPath.push(currentElement);
+                        currentElement = currentElement.parentElement;
+                    }
+                    touchedPath.push(document);
+                    touchedPath.push(window);
+                }
+            }
+            scrollBarTouched = touchedPath.some(element => 
                 element.scrollHeight > element.offsetHeight &&
                 (element.scrollTop > 0 || ((element.scrollTop = 1) && element.scrollTop === 1 && !(element.scrollTop = 0)))
             );
